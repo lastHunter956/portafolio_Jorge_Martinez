@@ -8,6 +8,9 @@ apiInstance.setApiKey(
   process.env.BREVO_API_KEY as string
 );
 
+console.log('BREVO_API_KEY:', process.env.BREVO_API_KEY);
+console.log('DESTINATION_EMAIL_ADDRESS:', process.env.DESTINATION_EMAIL_ADDRESS);
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });

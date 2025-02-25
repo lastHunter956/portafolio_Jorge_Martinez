@@ -50,6 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           <p>El equipo de Mi Página Web</p>
         </div>
       </body>
+      
     </html>
   `;
 

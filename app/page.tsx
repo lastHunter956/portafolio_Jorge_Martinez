@@ -1,13 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  AnimatePresence,
+} from "framer-motion";
 import { useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { GallerySection } from "@/components/gallery";
+import { WhatsAppButton } from "@/components/whatsapp-button";
 import {
   Carousel,
   CarouselContent,
@@ -44,14 +50,6 @@ const FadeInWhenVisible = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-interface ImageModalProps {
-  images: string[];
-  currentIndex: number;
-  isOpen: boolean;
-  onClose: () => void;
-  onNavigate: (index: number) => void;
-}
-
 export default function Home() {
   const targetRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -69,9 +67,36 @@ export default function Home() {
     }
   };
 
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState("");
+
+  const handleSendMessage = async () => {
+    try {
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      if (res.ok) {
+        setStatus("Mensaje enviado con éxito");
+        setName("");
+        setEmail("");
+        setMessage("");
+      } else {
+        setStatus("Error al enviar el mensaje");
+      }
+    } catch (error) {
+      setStatus("Error al enviar el mensaje");
+    }
+  };
+
   return (
     <main className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />
+      <WhatsAppButton />
 
       {/* Hero Section */}
       <section className="relative h-screen" ref={targetRef}>
@@ -143,16 +168,20 @@ export default function Home() {
               </div>
               <div className="space-y-8 mt-12 md:mt-0">
                 <h2 className="text-3xl md:text-4xl font-bold">
-                  <span className="text-gradient">
-                    Sobre Jorge Martinez
-                  </span>
+                  <span className="text-gradient">Sobre Jorge Martinez</span>
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                Con 25 años de experiencia en gastronomía internacional y nacional, le ofrece una propuesta culinaria única.
-
-Disfrute de los mejores sabores de la cocina italiana, francesa, española, fusión, marina y colombiana, elaborados con pasión y precisión. Formado en España y Colombia, pone a su disposición servicios de catering, eventos exclusivos, clases de cocina y menús personalizados.
-
-Su trayectoria incluye la participación en producciones televisivas y eventos de talla internacional, aportando su creatividad y excelencia en cada plato. Su cocina, inspirada en aromas y ambientes únicos, se basa en ingredientes frescos y especias que despiertan los sentidos.
+                  Con 25 años de experiencia en gastronomía internacional y
+                  nacional, le ofrece una propuesta culinaria única. Disfrute de
+                  los mejores sabores de la cocina italiana, francesa, española,
+                  fusión, marina y colombiana, elaborados con pasión y
+                  precisión. Formado en España y Colombia, pone a su disposición
+                  servicios de catering, eventos exclusivos, clases de cocina y
+                  menús personalizados. Su trayectoria incluye la participación
+                  en producciones televisivas y eventos de talla internacional,
+                  aportando su creatividad y excelencia en cada plato. Su
+                  cocina, inspirada en aromas y ambientes únicos, se basa en
+                  ingredientes frescos y especias que despiertan los sentidos.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <Card className="bg-primary/5 border-primary/20">
@@ -208,7 +237,8 @@ Su trayectoria incluye la participación en producciones televisivas y eventos d
                 title: "Timbal de Marisco",
                 image:
                   "https://okdiario.com/img/2019/07/19/receta-de-timbal-de-marisco-655x368.jpg",
-                description: "Mariscos frescos en timbal con vegetales, reducción de vino y especias",
+                description:
+                  "Mariscos frescos en timbal con vegetales, reducción de vino y especias",
                 price: "$70.000 cop / persona",
               },
               {
@@ -246,7 +276,7 @@ Su trayectoria incluye la participación en producciones televisivas y eventos d
       </section>
 
       {/* Gallery Section */}
-<GallerySection />
+      <GallerySection />
 
       {/* Services Section */}
       <section id="servicios" className="py-16 md:py-32 bg-muted/5">
@@ -415,13 +445,13 @@ Su trayectoria incluye la participación en producciones televisivas y eventos d
                     <p className="flex items-center space-x-2">
                       <span className="font-semibold">Email:</span>
                       <span className="text-muted-foreground">
-                      martinezchef.1106@gmail.com
+                        martinezchef.1106@gmail.com
                       </span>
                     </p>
                     <p className="flex items-center space-x-2">
                       <span className="font-semibold">Teléfono:</span>
                       <span className="text-muted-foreground">
-                      +57 312 7815413
+                        +57 312 7815413
                       </span>
                     </p>
                   </div>
@@ -434,21 +464,31 @@ Su trayectoria incluye la participación en producciones televisivas y eventos d
                   <input
                     type="text"
                     placeholder="Su Nombre"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     className="w-full p-4 rounded-lg border bg-primary/5 border-primary/20 focus:border-primary focus:ring-primary"
                   />
                   <input
                     type="email"
                     placeholder="Su Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full p-4 rounded-lg border bg-primary/5 border-primary/20 focus:border-primary focus:ring-primary"
                   />
                   <textarea
                     placeholder="Su Mensaje"
                     rows={6}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     className="w-full p-4 rounded-lg border bg-primary/5 border-primary/20 focus:border-primary focus:ring-primary"
                   />
-                  <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Button
+                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                    onClick={handleSendMessage}
+                  >
                     Enviar Mensaje
                   </Button>
+                  {status && <p className="mt-4 text-center">{status}</p>}
                 </div>
               </div>
             </FadeInWhenVisible>

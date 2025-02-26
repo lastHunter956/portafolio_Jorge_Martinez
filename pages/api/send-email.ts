@@ -8,9 +8,6 @@ apiInstance.setApiKey(
   process.env.BREVO_API_KEY as string
 );
 
-console.log('BREVO_API_KEY:', process.env.BREVO_API_KEY);
-console.log('DESTINATION_EMAIL_ADDRESS:', process.env.DESTINATION_EMAIL_ADDRESS);
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
@@ -18,12 +15,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { name, email, message } = req.body;
 
-  if (!name || !email || !message) {
-    return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+  if (!name || name.length <= 8) {
+    return res.status(400).json({ error: 'El nombre debe tener más de 8 caracteres' });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRegex.test(email)) {
+    return res.status(400).json({ error: 'El correo electrónico no es válido' });
+  }
+
+  if (!message || message.length < 20) {
+    return res.status(400).json({ error: 'El mensaje debe tener al menos 20 caracteres' });
   }
 
   const sendSmtpEmail = new brevo.SendSmtpEmail();
-  sendSmtpEmail.sender = { name: 'Mi Página Web', email: 'developersstudentpro@gmail.com' }; // Usa un correo verificado en Brevo
+  sendSmtpEmail.sender = { name: 'Mi Página Web', email: process.env.INIT_EMAIL_ADDRESS }; // Usa un correo verificado en Brevo
   sendSmtpEmail.to = [{ email: process.env.DESTINATION_EMAIL_ADDRESS || '', name: 'Destinatario' }];
   sendSmtpEmail.subject = `Nuevo mensaje de ${name}`;
   sendSmtpEmail.htmlContent = `
@@ -34,9 +40,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           <p style="text-align: center;">
             <img src="https://jesusserver.duckdns.org/apps/files_sharing/publicpreview/4LFf3gNsrB5tbpd?file=/&fileId=1003&x=1920&y=1080&a=true&etag=053a358e109901214c95b4e7bf69de43" alt="Chef Image" style="border-radius: 50%; width: 150px; height: 150px;">
           </p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Mensaje:</strong></p>
-          <p>${message}</p>
           <br>
           <p>Estimado Chef,</p>
           <p>Hemos recibido una solicitud de cotización para sus servicios. A continuación, encontrará los detalles del mensaje:</p>

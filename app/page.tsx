@@ -73,6 +73,25 @@ export default function Home() {
   const [status, setStatus] = useState("");
 
   const handleSendMessage = async () => {
+    if (name.length <= 8) {
+      setStatus("El nombre debe tener más de 8 caracteres");
+      setTimeout(() => setStatus(""), 5000);
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setStatus("El correo electrónico no es válido");
+      setTimeout(() => setStatus(""), 5000);
+      return;
+    }
+
+    if (message.length < 20) {
+      setStatus("El mensaje debe tener al menos 20 caracteres");
+      setTimeout(() => setStatus(""), 5000);
+      return;
+    }
+
     try {
       const res = await fetch("/api/send-email", {
         method: "POST",
@@ -86,11 +105,14 @@ export default function Home() {
         setEmail("");
         setMessage("");
       } else {
-        setStatus("Error al enviar el mensaje");
+        const data = await res.json();
+        setStatus(data.error || "Error al enviar el mensaje");
       }
     } catch (error) {
       setStatus("Error al enviar el mensaje");
     }
+
+    setTimeout(() => setStatus(""), 5000); // El mensaje desaparecerá después de 5 segundos
   };
 
   return (
@@ -488,7 +510,26 @@ export default function Home() {
                   >
                     Enviar Mensaje
                   </Button>
-                  {status && <p className="mt-4 text-center">{status}</p>}
+                  <FadeInWhenVisible>
+                    <AnimatePresence>
+                      {status && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.5 }}
+                          className={`mt-4 text-center p-3 rounded-lg text-white font-semibold ${
+                            status.includes("éxito")
+                              ? "bg-green-500"
+                              : "bg-red-500"
+                          }`}
+                        >
+                          {status}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </FadeInWhenVisible>
+                  
                 </div>
               </div>
             </FadeInWhenVisible>

@@ -8,7 +8,7 @@ const playfair = Playfair_Display({ subsets: ['latin'] });
 const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-montserrat' });
 
 export const metadata: Metadata = {
-  title: 'Jorge Martinez chef - Especialista en Gastronomía Marina',
+  title: 'Jorge Martinez chef',
   description: 'Experiencias gastronómicas exclusivas y servicios culinarios por el Chef Marco',
 };
 

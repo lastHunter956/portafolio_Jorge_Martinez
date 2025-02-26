@@ -12,7 +12,7 @@ export function WhatsAppButton() {
   const phoneNumber = "573127815413";
 
   const handleSendMessage = () => {
-    let message = "Hola, me gustaría obtener más información.";
+    let message = "Hola, Sr. Jorge. Vengo desde su página web y me gustaría obtener más información acerca de sus servicios.";
     if (name.trim() !== "") {
       message += ` Mi nombre es ${name}.`;
     }

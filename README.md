@@ -70,7 +70,7 @@ Está pensado para ser adaptable y reutilizable para cualquier otro perfil gastr
 Este proyecto fue desarrollado por **Jesús Martinez** como encargo para un cliente del sector gastronómico.
 
 📧 Contacto: jesusmartinez09@proton.me  
-🌐 Portafolio: [tusitio.dev](https://jesus-martinez.engineer)
+🌐 Portafolio: [Jesus Martinez](https://jesus-martinez.engineer/)
 
 ---
 
